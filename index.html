@@ -33,13 +33,26 @@
             100% { transform: scale(1); opacity: 1; }
         }
 
-        /* Custom Table Styles */
-        .score-table th { @apply text-xs uppercase tracking-wider text-slate-500 font-semibold py-2 px-3 text-right; }
-        .score-table th:first-child { @apply text-left; }
-        .score-table td { @apply py-2 px-3 text-sm border-b border-slate-800 text-right; }
-        .score-table td:first-child { @apply text-left font-medium text-slate-200; }
-        .score-table tr:last-child td { @apply border-b-0; }
-        .score-table tr:hover { @apply bg-slate-800/50; }
+        /* Fixed Layout Table Styles */
+        .score-table {
+            table-layout: fixed;
+            width: 100%;
+        }
+        /* Align headers and cells strictly */
+        .score-table th { 
+            @apply text-[10px] uppercase tracking-wider text-slate-500 font-semibold py-3 px-2 border-b border-slate-700/50 bg-slate-900/50; 
+        }
+        .score-table td { 
+            @apply py-2.5 px-2 text-sm border-b border-slate-800/50; 
+        }
+        
+        /* Alignment Utilities */
+        .text-r { text-align: right; }
+        .text-l { text-align: left; }
+        .text-c { text-align: center; }
+
+        .score-table tr:last-child td { border-bottom: none; }
+        .score-table tr:hover { background-color: rgba(30, 41, 59, 0.5); }
     </style>
 </head>
 <body>
@@ -147,75 +160,83 @@
                         <span className="animate-pulse w-3 h-3 bg-red-500 rounded-full shadow-[0_0_10px_rgba(239,68,68,0.6)]"></span>
                         <span className="text-xs font-bold text-red-500 uppercase tracking-widest">Live</span>
                     </div>}
+                    
+                    {/* Main Score Display */}
                     <div className="flex flex-col items-center justify-center mb-8 relative z-10">
-                        <div className="text-sm text-emerald-400 uppercase tracking-[0.2em] font-bold mb-1">{bat_team} Batting</div>
-                        <div className="text-7xl font-black font-mono tracking-tighter text-white drop-shadow-lg">{total_runs}<span className="text-slate-600 mx-1">/</span>{wickets}</div>
-                        <div className="text-slate-400 font-mono mt-2 text-lg">Overs: <span className="text-white">{over}.{ball}</span></div>
+                        <div className="text-sm text-emerald-400 uppercase tracking-[0.2em] font-bold mb-2">{bat_team} Batting</div>
+                        <div className="text-7xl font-black font-mono tracking-tighter text-white drop-shadow-lg leading-none">
+                            {total_runs}<span className="text-slate-600 mx-2 text-5xl font-light">/</span>{wickets}
+                        </div>
+                        <div className="text-slate-400 font-mono mt-3 text-lg bg-slate-950/30 px-4 py-1 rounded-full border border-white/5">
+                            Overs: <span className="text-white font-bold">{over}.{ball}</span>
+                        </div>
                         
-                        <div className="flex gap-8 mt-6 w-full justify-center">
+                        <div className="flex gap-12 mt-8 w-full justify-center border-t border-white/5 pt-6">
                             <div className="text-center">
-                                <div className="text-[10px] uppercase text-slate-500 font-bold tracking-widest">CRR</div>
-                                <div className="text-xl font-mono text-emerald-400">{crr}</div>
+                                <div className="text-[10px] uppercase text-slate-500 font-bold tracking-widest mb-1">CRR</div>
+                                <div className="text-2xl font-mono text-emerald-400 font-bold">{crr}</div>
                             </div>
                             {target && (
                                 <>
-                                <div className="text-center">
-                                    <div className="text-[10px] uppercase text-slate-500 font-bold tracking-widest">Target</div>
-                                    <div className="text-xl font-mono text-white">{target}</div>
+                                <div className="text-center px-8 border-x border-white/5">
+                                    <div className="text-[10px] uppercase text-slate-500 font-bold tracking-widest mb-1">Target</div>
+                                    <div className="text-2xl font-mono text-white font-bold">{target}</div>
                                 </div>
                                 <div className="text-center">
-                                    <div className="text-[10px] uppercase text-slate-500 font-bold tracking-widest">RRR</div>
-                                    <div className="text-xl font-mono text-rose-400">{rrr}</div>
+                                    <div className="text-[10px] uppercase text-slate-500 font-bold tracking-widest mb-1">RRR</div>
+                                    <div className="text-2xl font-mono text-rose-400 font-bold">{rrr}</div>
                                 </div>
                                 </>
                             )}
                         </div>
                     </div>
 
+                    {/* Active Players Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative z-10">
                         {/* Batting Card */}
-                        <div className="bg-slate-950/40 p-4 rounded-xl border border-white/5 backdrop-blur-sm">
-                            <div className="text-[10px] text-slate-500 uppercase mb-3 flex items-center gap-2 font-bold tracking-wider">
+                        <div className="bg-slate-950/40 p-5 rounded-xl border border-white/5 backdrop-blur-sm shadow-inner">
+                            <div className="text-[10px] text-slate-500 uppercase mb-4 flex items-center gap-2 font-bold tracking-wider border-b border-white/5 pb-2">
                                 <i data-lucide="users" className="w-3 h-3"></i> Batting
                             </div>
                             {striker && (
-                                <div className="flex justify-between items-center mb-2 pb-2 border-b border-white/5">
-                                    <div className="flex items-center gap-2">
+                                <div className="flex justify-between items-center mb-3">
+                                    <div className="flex items-center gap-3">
                                         <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>
-                                        <span className="font-bold text-white text-lg">{striker.name}</span>
+                                        <span className="font-bold text-white text-lg tracking-tight">{striker.name}</span>
                                     </div>
-                                    <div className="font-mono text-emerald-400 text-xl font-bold">{striker.runs}<span className="text-slate-500 text-xs ml-1 font-normal">({striker.balls})</span></div>
+                                    <div className="font-mono text-emerald-400 text-xl font-bold">{striker.runs}<span className="text-slate-500 text-sm ml-1 font-medium">({striker.balls})</span></div>
                                 </div>
                             )}
                             {non_striker && (
-                                <div className="flex justify-between items-center opacity-70">
-                                    <span className="text-slate-300 font-medium pl-3.5">{non_striker.name}</span>
-                                    <span className="font-mono text-slate-400">{non_striker.runs}<span className="text-slate-600 text-xs ml-1">({non_striker.balls})</span></span>
+                                <div className="flex justify-between items-center opacity-60">
+                                    <span className="text-slate-300 font-medium pl-4.5">{non_striker.name}</span>
+                                    <span className="font-mono text-slate-400">{non_striker.runs}<span className="text-slate-600 text-sm ml-1">({non_striker.balls})</span></span>
                                 </div>
                             )}
                         </div>
 
                         {/* Bowling Card */}
-                        <div className="bg-slate-950/40 p-4 rounded-xl border border-white/5 backdrop-blur-sm">
-                             <div className="text-[10px] text-slate-500 uppercase mb-3 flex items-center gap-2 font-bold tracking-wider">
+                        <div className="bg-slate-950/40 p-5 rounded-xl border border-white/5 backdrop-blur-sm shadow-inner">
+                             <div className="text-[10px] text-slate-500 uppercase mb-4 flex items-center gap-2 font-bold tracking-wider border-b border-white/5 pb-2">
                                 <i data-lucide="crosshair" className="w-3 h-3"></i> Bowling
                             </div>
                             {bowler && (
                                 <div>
-                                    <div className="flex justify-between items-center mb-1">
-                                        <span className="font-bold text-rose-300 text-lg">{bowler.name}</span>
+                                    <div className="flex justify-between items-center mb-4">
+                                        <span className="font-bold text-rose-300 text-lg tracking-tight">{bowler.name}</span>
                                     </div>
-                                    <div className="flex justify-between items-center mt-2">
-                                        <div className="text-center">
-                                            <div className="text-[10px] text-slate-500">W</div>
+                                    <div className="grid grid-cols-3 gap-2">
+                                        <div className="bg-slate-800/50 rounded p-1 text-center border border-white/5">
+                                            <div className="text-[9px] text-slate-500 uppercase font-bold">Wickets</div>
                                             <div className="font-mono font-bold text-white text-lg">{bowler.wickets}</div>
                                         </div>
-                                        <div className="text-center">
-                                            <div className="text-[10px] text-slate-500">R</div>
-                                            <div className="font-mono text-slate-300 text-lg">{bowler.runs_given}</div>
+                                        <div className="bg-slate-800/50 rounded p-1 text-center border border-white/5">
+                                            <div className="text-[9px] text-slate-500 uppercase font-bold">Runs</div>
+                                            {/* Server uses 'runs_given' in the live feed for bowler stats */}
+                                            <div className="font-mono text-slate-300 text-lg">{bowler.runs_given ?? bowler.runs ?? 0}</div>
                                         </div>
-                                        <div className="text-center">
-                                            <div className="text-[10px] text-slate-500">O</div>
+                                        <div className="bg-slate-800/50 rounded p-1 text-center border border-white/5">
+                                            <div className="text-[9px] text-slate-500 uppercase font-bold">Overs</div>
                                             <div className="font-mono text-slate-300 text-lg">{bowler.overs}.{ball}</div>
                                         </div>
                                     </div>
@@ -242,7 +263,6 @@
                     groupedOvers.push(over);
                 }
                 over.balls.push(e.is_wicket ? 'W' : e.runs_scored);
-                // Update totals to the latest state of the over
                 over.runs = e.total_runs;
                 over.wickets = e.wickets;
             });
@@ -256,14 +276,14 @@
                         {events.length === 0 && <div className="text-center text-slate-600 italic mt-32">Waiting for first ball...</div>}
                         {groupedOvers.map((over) => (
                             <div key={over.key} className="p-4 bg-slate-800 rounded-lg border border-slate-700/50 flex items-center justify-between ball-pop shadow-sm">
-                                <div className="flex flex-col gap-1">
+                                <div className="flex flex-col gap-1 w-24 flex-shrink-0">
                                     <span className="text-emerald-400 font-bold text-sm">Over {over.overNum}</span>
                                     <span className="text-slate-500 text-xs font-bold">{over.team}</span>
                                 </div>
-                                <div className="flex items-center gap-3">
-                                    <div className="flex gap-1.5">
+                                <div className="flex items-center gap-3 flex-1 justify-end">
+                                    <div className="flex gap-1.5 justify-end">
                                         {over.balls.map((b, j) => (
-                                            <span key={j} className={`w-7 h-7 flex items-center justify-center rounded text-xs font-bold font-mono shadow-sm
+                                            <span key={j} className={`w-6 h-6 flex items-center justify-center rounded text-[10px] font-bold font-mono shadow-sm
                                                 ${b === 'W' ? 'bg-rose-500 text-white' : 
                                                   b === 6 ? 'bg-purple-500 text-white' : 
                                                   b === 4 ? 'bg-emerald-500 text-slate-900' : 
@@ -273,8 +293,8 @@
                                         ))}
                                     </div>
                                     <div className="w-px h-8 bg-slate-700 mx-1"></div>
-                                    <div className="text-right">
-                                        <div className="text-white font-mono font-bold text-lg">{over.runs}/{over.wickets}</div>
+                                    <div className="text-right w-16 flex-shrink-0">
+                                        <div className="text-white font-mono font-bold text-sm">{over.runs}/{over.wickets}</div>
                                     </div>
                                 </div>
                             </div>
@@ -300,39 +320,43 @@
                     
                     <div className="bg-slate-900 border border-t-0 border-slate-800 rounded-b-xl overflow-hidden p-4">
                         {/* Batting Table */}
-                        <div className="mb-6">
+                        <div className="mb-8">
                             <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 px-2">Batting</h4>
                             <div className="overflow-x-auto">
-                                <table className="w-full score-table">
+                                <table className="score-table">
                                     <thead className="bg-slate-900 border-b border-slate-700">
                                         <tr>
-                                            <th className="w-1/3">Batter</th>
-                                            <th>R</th>
-                                            <th>B</th>
-                                            <th>4s</th>
-                                            <th>6s</th>
-                                            <th>SR</th>
+                                            <th className="text-l w-[40%]">Batter</th>
+                                            <th className="text-r w-[10%]">R</th>
+                                            <th className="text-r w-[10%]">B</th>
+                                            <th className="text-c w-[10%]">4s</th>
+                                            <th className="text-c w-[10%]">6s</th>
+                                            <th className="text-r w-[20%]">SR</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {data.batting && data.batting.map((b, i) => {
                                             const sr = b.balls > 0 ? ((b.runs / b.balls) * 100).toFixed(1) : "0.0";
-                                            // Fallbacks for 4s/6s if API doesn't send them yet
-                                            const fours = b.fours || "-";
-                                            const sixes = b.sixes || "-";
+                                            // Server does not strictly track 4s/6s in the player_stats dict yet, defaults to "-"
+                                            const fours = b.fours ?? "-";
+                                            const sixes = b.sixes ?? "-";
+                                            const didBat = b.balls > 0 || b.out;
+                                            
                                             return (
                                                 <tr key={i} className={!b.out && b.balls > 0 ? "bg-emerald-900/10" : ""}>
-                                                    <td>
+                                                    <td className="text-l">
                                                         <div className="flex flex-col">
-                                                            <span className={`${b.out ? 'text-slate-400' : 'text-emerald-400 font-bold'}`}>{b.name} {!b.out ? '*' : ''}</span>
-                                                            <span className="text-[10px] text-slate-500 font-normal lowercase">{b.out ? 'out' : 'not out'}</span>
+                                                            <span className={`${b.out ? 'text-slate-400' : (didBat ? 'text-emerald-400 font-bold' : 'text-slate-500')}`}>
+                                                                {b.name} {!b.out && didBat ? '*' : ''}
+                                                            </span>
+                                                            <span className="text-[10px] text-slate-500 font-normal lowercase">{b.out ? 'out' : (didBat ? 'not out' : '')}</span>
                                                         </div>
                                                     </td>
-                                                    <td className="font-bold text-white">{b.runs}</td>
-                                                    <td className="text-slate-400">{b.balls}</td>
-                                                    <td className="text-slate-500">{fours}</td>
-                                                    <td className="text-slate-500">{sixes}</td>
-                                                    <td className="text-slate-400 font-mono text-xs">{sr}</td>
+                                                    <td className="text-r font-bold text-white">{b.runs}</td>
+                                                    <td className="text-r text-slate-400">{b.balls}</td>
+                                                    <td className="text-c text-slate-500">{fours}</td>
+                                                    <td className="text-c text-slate-500">{sixes}</td>
+                                                    <td className="text-r text-slate-400 font-mono text-xs">{sr}</td>
                                                 </tr>
                                             );
                                         })}
@@ -346,28 +370,40 @@
                             <div>
                                 <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 px-2">Bowling</h4>
                                 <div className="overflow-x-auto">
-                                    <table className="w-full score-table">
+                                    <table className="score-table">
                                         <thead className="bg-slate-900 border-b border-slate-700">
                                             <tr>
-                                                <th className="w-1/3">Bowler</th>
-                                                <th>O</th>
-                                                <th>M</th>
-                                                <th>R</th>
-                                                <th>W</th>
-                                                <th>Econ</th>
+                                                <th className="text-l w-[40%]">Bowler</th>
+                                                <th className="text-c w-[10%]">O</th>
+                                                <th className="text-c w-[10%]">M</th>
+                                                <th className="text-c w-[10%]">R</th>
+                                                <th className="text-c w-[10%]">W</th>
+                                                <th className="text-r w-[20%]">Econ</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {data.bowling.map((b, i) => {
-                                                const econ = b.overs > 0 ? (b.runs / b.overs).toFixed(2) : "-";
+                                                // Handle server data mapping: 'runs_given' is the key in server's bowler_stats
+                                                const runs = b.runs_given ?? b.runs ?? 0;
+                                                const wickets = b.wickets ?? 0;
+                                                const maidens = b.maidens ?? 0; 
+                                                const balls = b.balls ?? 0;
+                                                
+                                                // Calculate Overs string (e.g. 3.2) from balls instead of using integer 'overs'
+                                                const oversDisplay = `${Math.floor(balls / 6)}.${balls % 6}`;
+
+                                                // Calculate Economy based on actual ball count
+                                                const oversFloat = balls / 6;
+                                                const econ = oversFloat > 0 ? (runs / oversFloat).toFixed(2) : "0.00";
+
                                                 return (
                                                     <tr key={i}>
-                                                        <td className="text-rose-300 font-medium">{b.name}</td>
-                                                        <td className="text-slate-300">{b.overs}</td>
-                                                        <td className="text-slate-500">{b.maidens || 0}</td>
-                                                        <td className="text-slate-300">{b.runs}</td>
-                                                        <td className="font-bold text-white">{b.wickets}</td>
-                                                        <td className="text-slate-400 font-mono text-xs">{econ}</td>
+                                                        <td className="text-l text-rose-300 font-medium">{b.name}</td>
+                                                        <td className="text-c text-slate-300">{oversDisplay}</td>
+                                                        <td className="text-c text-slate-500">{maidens}</td>
+                                                        <td className="text-c text-slate-300">{runs}</td>
+                                                        <td className="text-c font-bold text-white">{wickets}</td>
+                                                        <td className="text-r text-slate-400 font-mono text-xs">{econ}</td>
                                                     </tr>
                                                 );
                                             })}
@@ -377,6 +413,63 @@
                             </div>
                         )}
                     </div>
+                </div>
+            );
+        };
+
+        const SeriesSummary = ({ data }) => {
+            if (!data || !data.summary) return null;
+
+            let summaryText = "";
+            let subText = "";
+
+            const parseSummary = (sum) => {
+                if (typeof sum === 'object') return sum;
+                // Attempt to parse python-style string dictionary (e.g., "{'Team': 1}")
+                if (typeof sum === 'string' && sum.trim().startsWith('{')) {
+                    try {
+                        const jsonString = sum.replace(/'/g, '"');
+                        return JSON.parse(jsonString);
+                    } catch (e) {
+                        return sum;
+                    }
+                }
+                return sum;
+            };
+
+            const summaryObj = parseSummary(data.summary);
+
+            if (typeof summaryObj === 'string') {
+                summaryText = summaryObj;
+            } else if (summaryObj.scoreline) {
+                summaryText = summaryObj.scoreline;
+            } else {
+                // Parse object like {'India': 1, 'Australia': 0, 'Tie': 0}
+                const entries = Object.entries(summaryObj).filter(([k]) => k !== 'Tie');
+                if (entries.length >= 2) {
+                    const [team1, score1] = entries[0];
+                    const [team2, score2] = entries[1];
+                    const tie = summaryObj['Tie'] || 0;
+                    
+                    if (score1 > score2) summaryText = `${team1} Wins Series`;
+                    else if (score2 > score1) summaryText = `${team2} Wins Series`;
+                    else summaryText = "Series Drawn";
+                    
+                    subText = `${team1} (${score1}) - ${team2} (${score2})` + (tie > 0 ? ` | Ties: ${tie}` : "");
+                } else {
+                    summaryText = "Series Concluded";
+                    subText = JSON.stringify(summaryObj);
+                }
+            }
+
+            return (
+                <div className="bg-gradient-to-r from-emerald-900/40 to-slate-900 border border-emerald-500/30 p-8 rounded-2xl text-center shadow-2xl relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-50"></div>
+                    <h3 className="text-sm font-black text-emerald-500 uppercase tracking-[0.3em] mb-4">Series Summary</h3>
+                    <div className="text-3xl md:text-5xl font-black text-white drop-shadow-lg mb-2">
+                        {summaryText}
+                    </div>
+                    {subText && <div className="text-slate-400 font-mono text-lg">{subText}</div>}
                 </div>
             );
         };
@@ -497,10 +590,10 @@
                         {seriesComplete && <div className="text-emerald-400 font-black animate-pulse uppercase tracking-widest text-xs border border-emerald-500/20 px-3 py-1 rounded bg-emerald-500/5">Series Concluded</div>}
                     </div>
 
-                    <div className="w-full max-w-6xl grid lg:grid-cols-3 gap-8">
+                    <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-8">
                         
-                        {/* LEFT COLUMN: LIVE ACTION (2/3 width on large screens) */}
-                        <div className="lg:col-span-2 space-y-6">
+                        {/* LEFT COLUMN: LIVE ACTION (1/2 width) */}
+                        <div className="space-y-6">
                             {/* Loading State */}
                             {!matchDetail && !seriesComplete && (
                                 <div className="flex flex-col items-center justify-center h-96 text-slate-500 animate-pulse bg-slate-900/50 rounded-2xl border border-slate-800 border-dashed">
@@ -513,25 +606,15 @@
                             <ScoreCardLive detail={matchDetail} live={!seriesComplete} />
                         </div>
 
-                        {/* RIGHT COLUMN: COMMENTARY (1/3 width) */}
-                        <div className="lg:col-span-1">
+                        {/* RIGHT COLUMN: COMMENTARY (1/2 width) */}
+                        <div className="">
                              <Commentary events={ballEvents} />
                         </div>
                     </div>
 
                     {/* FULL WIDTH BOTTOM SECTION: MATCH HISTORY / SCORECARDS */}
                     <div className="w-full max-w-6xl mt-12 space-y-8">
-                        {seriesComplete && (
-                            <div className="bg-gradient-to-r from-emerald-900/20 to-slate-900 border border-emerald-500/30 p-8 rounded-2xl text-center shadow-2xl relative overflow-hidden">
-                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-50"></div>
-                                <h3 className="text-sm font-black text-emerald-500 uppercase tracking-[0.3em] mb-4">Series Summary</h3>
-                                <div className="text-3xl md:text-5xl font-black text-white drop-shadow-lg">
-                                    {typeof seriesComplete.summary === 'object' && seriesComplete.summary.scoreline 
-                                        ? seriesComplete.summary.scoreline 
-                                        : (typeof seriesComplete.summary === 'string' ? seriesComplete.summary : JSON.stringify(seriesComplete.summary))}
-                                </div>
-                            </div>
-                        )}
+                        {seriesComplete && <SeriesSummary data={seriesComplete} />}
 
                         {history.length > 0 && (
                             <div>
