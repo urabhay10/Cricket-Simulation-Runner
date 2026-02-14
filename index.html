@@ -760,41 +760,8 @@
             const [seriesComplete, setSeriesComplete] = useState(null);
 
             const fillDefaults = () => {
-                // Team 1: Elite Openers → Slow / Underwhelming 3–6
-                setTeam1({
-                    name: "Powerplay Kings XI",
-                    players: [
-                        "RG Sharma",        // elite opener
-                        "JC Buttler",       // elite opener
-                        "KS Williamson",    // slow at 3
-                        "KL Rahul",         // accumulative
-                        "Babar Azam",       // anchor-type tempo
-                        "MS Wade",          // moderate impact
-                        "HH Pandya",        // balance
-                        "RA Jadeja",        // balance
-                        "JJ Bumrah",
-                        "MA Starc",
-                        "A Zampa"
-                    ]
-                });
-
-                // Team 2: Slow Openers → Best T20I Core (3–6)
-                setTeam2({
-                    name: "Middle Order Masters XI",
-                    players: [
-                        "Babar Azam",       // steady opener
-                        "Ishan Kishan",     // controlled aggression
-                        "V Kohli",          // elite at 3
-                        "SA Yadav",         // peak T20I batter
-                        "GJ Maxwell",       // high-impact
-                        "HH Pandya",        // finisher
-                        "MS Dhoni",         // death control
-                        "RA Jadeja",        // all-round balance
-                        "JJ Bumrah",
-                        "MA Starc",
-                        "A Zampa"
-                    ]
-                });
+                setTeam1({ name: "India", players: ["RG Sharma", "V Kohli", "RR Pant", "SA Yadav", "S Dube", "HH Pandya", "RA Jadeja", "AR Patel", "Kuldeep Yadav", "JJ Bumrah", "Arshdeep Singh"] });
+                setTeam2({ name: "Australia", players: ["DA Warner", "TM Head", "MR Marsh", "GJ Maxwell", "MP Stoinis", "TH David", "MS Wade", "PJ Cummins", "MA Starc", "A Zampa", "JR Hazlewood"] });
             };
 
 
