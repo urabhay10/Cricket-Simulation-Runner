@@ -760,42 +760,43 @@
             const [seriesComplete, setSeriesComplete] = useState(null);
 
             const fillDefaults = () => {
-                // Team 1: Attacking Bowling + Consistent Batsmen
+                // Team 1: Elite Openers → Slow / Underwhelming 3–6
                 setTeam1({
-                    name: "Precision XI",
+                    name: "Powerplay Kings XI",
                     players: [
-                        "Babar Azam",      // consistent anchor
-                        "DA Warner",       // experienced top order
-                        "V Kohli",         // chase specialist
-                        "KS Williamson",   // stability
-                        "JC Buttler",      // controlled aggression
-                        "HH Pandya",       // seam all-rounder
-                        "RA Jadeja",       // balance
-                        "JJ Bumrah",       // strike bowler
-                        "MA Starc",        // attacking pace
-                        "K Rabada",        // wicket-taker
-                        "YS Chahal"      // attacking spin
+                        "RG Sharma",        // elite opener
+                        "JC Buttler",       // elite opener
+                        "KS Williamson",    // slow at 3
+                        "KL Rahul",         // accumulative
+                        "Babar Azam",       // anchor-type tempo
+                        "MS Wade",          // moderate impact
+                        "HH Pandya",        // balance
+                        "RA Jadeja",        // balance
+                        "JJ Bumrah",
+                        "MA Starc",
+                        "A Zampa"
                     ]
                 });
 
-                // Team 2: Attacking Batsmen + Consistent Bowlers
+                // Team 2: Slow Openers → Best T20I Core (3–6)
                 setTeam2({
-                    name: "Power Surge XI",
+                    name: "Middle Order Masters XI",
                     players: [
-                        "RG Sharma",       // explosive opener
-                        "TM Head",         // aggressive intent
-                        "SA Yadav",        // 360° strokeplay
-                        "GJ Maxwell",      // high impact
-                        "MP Stoinis",      // power hitter
-                        "TH David",        // finisher
-                        "MS Dhoni",        // control in death
-                        "PJ Cummins",      // reliable pace
-                        "JR Hazlewood",    // line-length master
-                        "A Zampa",         // consistent spinner
-                        "Mohammad Nabi"    // economical all-round option
+                        "Babar Azam",       // steady opener
+                        "Ishan Kishan",     // controlled aggression
+                        "V Kohli",          // elite at 3
+                        "SA Yadav",         // peak T20I batter
+                        "GJ Maxwell",       // high-impact
+                        "HH Pandya",        // finisher
+                        "MS Dhoni",         // death control
+                        "RA Jadeja",        // all-round balance
+                        "JJ Bumrah",
+                        "MA Starc",
+                        "A Zampa"
                     ]
                 });
             };
+
 
             const updatePlayer = (tId, idx, v) => {
                 if (tId === 1) { const n = [...team1.players]; n[idx] = v; setTeam1({ ...team1, players: n }); }
