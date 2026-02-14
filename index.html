@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,13 +14,24 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #e2e8f0; }
-        .font-mono { font-family: 'JetBrains Mono', monospace; }
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #e2e8f0;
+        }
+
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
         .suggestion-active {
             background-color: #334155;
             border-left: 4px solid #10b981;
@@ -28,9 +40,17 @@
         .ball-pop {
             animation: pop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
+
         @keyframes pop {
-            0% { transform: scale(0.8); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
         /* Fixed Layout Table Styles */
@@ -38,28 +58,44 @@
             table-layout: fixed;
             width: 100%;
         }
-        /* Align headers and cells strictly */
-        .score-table th { 
-            @apply text-[10px] uppercase tracking-wider text-slate-500 font-semibold py-3 px-2 border-b border-slate-700/50 bg-slate-900/50; 
-        }
-        .score-table td { 
-            @apply py-2.5 px-2 text-sm border-b border-slate-800/50; 
-        }
-        
-        /* Alignment Utilities */
-        .text-r { text-align: right; }
-        .text-l { text-align: left; }
-        .text-c { text-align: center; }
 
-        .score-table tr:last-child td { border-bottom: none; }
-        .score-table tr:hover { background-color: rgba(30, 41, 59, 0.5); }
-        
+        /* Align headers and cells strictly */
+        .score-table th {
+            @apply text-[10px] uppercase tracking-wider text-slate-500 font-semibold py-3 px-2 border-b border-slate-700/50 bg-slate-900/50;
+        }
+
+        .score-table td {
+            @apply py-2.5 px-2 text-sm border-b border-slate-800/50;
+        }
+
+        /* Alignment Utilities */
+        .text-r {
+            text-align: right;
+        }
+
+        .text-l {
+            text-align: left;
+        }
+
+        .text-c {
+            text-align: center;
+        }
+
+        .score-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .score-table tr:hover {
+            background-color: rgba(30, 41, 59, 0.5);
+        }
+
         /* Predictor Bar Animation */
         .prob-bar {
             transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
     </style>
 </head>
+
 <body>
     <div id="root"></div>
 
@@ -76,7 +112,7 @@
                 const text = e.target.value;
                 onChange(text);
                 if (text.length >= 1) {
-                    fetch(`http://127.0.0.1:8000/players/search?q=${text}`)
+                    fetch(`https://hewhocodes247-cricket-transformer-api.hf.space/players/search?q=${text}`)
                         .then(res => res.json())
                         .then(data => {
                             setSuggestions(data);
@@ -130,7 +166,7 @@
                     {show && suggestions.length > 0 && (
                         <ul ref={listRef} className="absolute z-50 w-full bg-slate-800 border border-slate-700 mt-1 rounded max-h-48 overflow-y-auto shadow-xl scrollbar-hide">
                             {suggestions.map((s, i) => (
-                                <li key={i} 
+                                <li key={i}
                                     className={`p-2 hover:bg-slate-700 cursor-pointer text-sm border-b border-slate-700/50 flex justify-between transition-colors ${i === selectedIndex ? 'suggestion-active bg-slate-700' : ''}`}
                                     onMouseEnter={() => setSelectedIndex(i)}
                                     onClick={() => handleSelect(s)}>
@@ -185,7 +221,7 @@
                         target: form.innings === 2 && form.target ? parseInt(form.target) : null
                     };
 
-                    const response = await fetch('http://127.0.0.1:8000/predict_ball', {
+                    const response = await fetch('https://hewhocodes247-cricket-transformer-api.hf.space/predict_ball', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload)
@@ -214,7 +250,7 @@
                 <div className="min-h-screen p-6 flex flex-col items-center animate-fade-in max-w-4xl mx-auto w-full">
                     {/* Header */}
                     <div className="w-full flex justify-between items-center mb-8">
-                         <button onClick={onBack} className="text-xs font-bold text-slate-500 hover:text-white flex items-center gap-2 px-4 py-2 rounded-full bg-slate-900 border border-slate-800 transition hover:border-slate-600">
+                        <button onClick={onBack} className="text-xs font-bold text-slate-500 hover:text-white flex items-center gap-2 px-4 py-2 rounded-full bg-slate-900 border border-slate-800 transition hover:border-slate-600">
                             <i data-lucide="arrow-left" className="w-4 h-4"></i> BACK TO SIMULATOR
                         </button>
                         <h1 className="text-2xl font-black bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent uppercase tracking-tight">AI Ball Predictor</h1>
@@ -226,12 +262,12 @@
                             <div className="flex justify-between items-center border-b border-slate-800 pb-4">
                                 <h2 className="font-bold text-white flex items-center gap-2"><i data-lucide="sliders" className="w-4 h-4 text-purple-400"></i> Match State</h2>
                             </div>
-                            
+
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="text-[10px] uppercase font-bold text-slate-500 mb-1 block">Innings</label>
-                                    <select 
-                                        value={form.innings} 
+                                    <select
+                                        value={form.innings}
                                         onChange={(e) => handleChange('innings', parseInt(e.target.value))}
                                         className="w-full bg-slate-800 border border-slate-700 rounded p-2 text-sm text-white focus:border-purple-500 outline-none"
                                     >
@@ -241,10 +277,10 @@
                                 </div>
                                 <div>
                                     <label className="text-[10px] uppercase font-bold text-slate-500 mb-1 block">Target (Runs)</label>
-                                    <input 
-                                        type="number" 
+                                    <input
+                                        type="number"
                                         disabled={form.innings === 1}
-                                        value={form.target} 
+                                        value={form.target}
                                         onChange={(e) => handleChange('target', e.target.value)}
                                         className="w-full bg-slate-800 border border-slate-700 rounded p-2 text-sm text-white focus:border-purple-500 outline-none disabled:opacity-30"
                                         placeholder={form.innings === 1 ? "-" : "e.g. 180"}
@@ -275,26 +311,26 @@
                             <div className="space-y-4 pt-2 border-t border-slate-800">
                                 <div>
                                     <label className="text-[10px] uppercase font-bold text-emerald-500 mb-1 block">Striker</label>
-                                    <PlayerInput 
-                                        value={form.striker_name} 
-                                        onChange={(v) => handleChange('striker_name', v)} 
+                                    <PlayerInput
+                                        value={form.striker_name}
+                                        onChange={(v) => handleChange('striker_name', v)}
                                         placeholder="Enter Batter Name"
                                         className="w-full bg-slate-800 border border-emerald-500/30 rounded p-2 text-sm text-white focus:border-emerald-500 outline-none"
                                     />
                                 </div>
                                 <div>
                                     <label className="text-[10px] uppercase font-bold text-rose-500 mb-1 block">Bowler</label>
-                                    <PlayerInput 
-                                        value={form.bowler_name} 
-                                        onChange={(v) => handleChange('bowler_name', v)} 
+                                    <PlayerInput
+                                        value={form.bowler_name}
+                                        onChange={(v) => handleChange('bowler_name', v)}
                                         placeholder="Enter Bowler Name"
                                         className="w-full bg-slate-800 border border-rose-500/30 rounded p-2 text-sm text-white focus:border-rose-500 outline-none"
                                     />
                                 </div>
                             </div>
 
-                            <button 
-                                onClick={handlePredict} 
+                            <button
+                                onClick={handlePredict}
                                 disabled={loading}
                                 className="w-full py-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 font-bold text-white shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2"
                             >
@@ -311,12 +347,12 @@
                                     <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-xl relative overflow-hidden">
                                         <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl -mr-10 -mt-10"></div>
                                         <h3 className="text-slate-400 font-bold text-xs uppercase tracking-widest mb-6">Probability Distribution</h3>
-                                        
+
                                         <div className="space-y-4">
                                             {Object.entries(result.distribution).map(([outcome, prob]) => {
                                                 const percentage = (prob * 100).toFixed(1);
                                                 const isMax = Math.max(...Object.values(result.distribution)) === prob;
-                                                
+
                                                 return (
                                                     <div key={outcome} className="group">
                                                         <div className="flex justify-between text-sm mb-1">
@@ -326,8 +362,8 @@
                                                             <span className="font-mono text-slate-400">{percentage}%</span>
                                                         </div>
                                                         <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
-                                                            <div 
-                                                                className={`h-full rounded-full prob-bar ${outcomeColors[outcome] || 'bg-slate-500'} ${isMax ? 'shadow-[0_0_10px_currentColor]' : ''}`} 
+                                                            <div
+                                                                className={`h-full rounded-full prob-bar ${outcomeColors[outcome] || 'bg-slate-500'} ${isMax ? 'shadow-[0_0_10px_currentColor]' : ''}`}
                                                                 style={{ width: `${percentage}%`, opacity: isMax ? 1 : 0.7 }}
                                                             ></div>
                                                         </div>
@@ -368,7 +404,7 @@
         const ScoreCardLive = ({ detail, live }) => {
             if (!detail) return null;
             const { striker, non_striker, bowler, total_runs = 0, wickets = 0, bat_team = "", target, over = 0, ball = 0 } = detail || {};
-            
+
             const ballsDone = over * 6 + ball;
             const crr = ballsDone > 0 ? ((total_runs / ballsDone) * 6).toFixed(2) : "0.00";
             let rrr = null;
@@ -384,7 +420,7 @@
                         <span className="animate-pulse w-3 h-3 bg-red-500 rounded-full shadow-[0_0_10px_rgba(239,68,68,0.6)]"></span>
                         <span className="text-xs font-bold text-red-500 uppercase tracking-widest">Live</span>
                     </div>}
-                    
+
                     {/* Main Score Display */}
                     <div className="flex flex-col items-center justify-center mb-8 relative z-10">
                         <div className="text-sm text-emerald-400 uppercase tracking-[0.2em] font-bold mb-2">{bat_team} Batting</div>
@@ -394,7 +430,7 @@
                         <div className="text-slate-400 font-mono mt-3 text-lg bg-slate-950/30 px-4 py-1 rounded-full border border-white/5">
                             Overs: <span className="text-white font-bold">{over}.{ball}</span>
                         </div>
-                        
+
                         <div className="flex gap-12 mt-8 w-full justify-center border-t border-white/5 pt-6">
                             <div className="text-center">
                                 <div className="text-[10px] uppercase text-slate-500 font-bold tracking-widest mb-1">CRR</div>
@@ -402,14 +438,14 @@
                             </div>
                             {target && (
                                 <>
-                                <div className="text-center px-8 border-x border-white/5">
-                                    <div className="text-[10px] uppercase text-slate-500 font-bold tracking-widest mb-1">Target</div>
-                                    <div className="text-2xl font-mono text-white font-bold">{target}</div>
-                                </div>
-                                <div className="text-center">
-                                    <div className="text-[10px] uppercase text-slate-500 font-bold tracking-widest mb-1">RRR</div>
-                                    <div className="text-2xl font-mono text-rose-400 font-bold">{rrr}</div>
-                                </div>
+                                    <div className="text-center px-8 border-x border-white/5">
+                                        <div className="text-[10px] uppercase text-slate-500 font-bold tracking-widest mb-1">Target</div>
+                                        <div className="text-2xl font-mono text-white font-bold">{target}</div>
+                                    </div>
+                                    <div className="text-center">
+                                        <div className="text-[10px] uppercase text-slate-500 font-bold tracking-widest mb-1">RRR</div>
+                                        <div className="text-2xl font-mono text-rose-400 font-bold">{rrr}</div>
+                                    </div>
                                 </>
                             )}
                         </div>
@@ -441,7 +477,7 @@
 
                         {/* Bowling Card */}
                         <div className="bg-slate-950/40 p-5 rounded-xl border border-white/5 backdrop-blur-sm shadow-inner">
-                             <div className="text-[10px] text-slate-500 uppercase mb-4 flex items-center gap-2 font-bold tracking-wider border-b border-white/5 pb-2">
+                            <div className="text-[10px] text-slate-500 uppercase mb-4 flex items-center gap-2 font-bold tracking-wider border-b border-white/5 pb-2">
                                 <i data-lucide="crosshair" className="w-3 h-3"></i> Bowling
                             </div>
                             {bowler && (
@@ -486,11 +522,11 @@
             const groupedOvers = [];
             events.forEach(e => {
                 if (!e || typeof e.over === 'undefined') return;
-                
+
                 // CRITICAL FIX: Include match_no in the key to prevent overs from different matches merging
                 const matchPrefix = e.match_no ? `M${e.match_no}-` : '';
                 const key = `${matchPrefix}${e.innings}-${e.over}`;
-                
+
                 let over = groupedOvers.find(o => o.key === key);
                 if (!over) {
                     over = { key: key, team: e.bat_team, balls: [], runs: e.total_runs, wickets: e.wickets, overNum: e.over + 1 };
@@ -505,7 +541,7 @@
                 <div className="bg-slate-900 rounded-xl border border-slate-800 h-96 flex flex-col">
                     <div className="p-3 border-b border-slate-800 bg-slate-900/50 backdrop-blur font-bold text-slate-400 text-xs uppercase tracking-widest sticky top-0 flex justify-between items-center z-10">
                         <span>Live Commentary</span>
-                        <button 
+                        <button
                             onClick={() => setIsAutoScroll(!isAutoScroll)}
                             className={`text-[10px] px-2 py-1 rounded border transition-colors ${isAutoScroll ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50' : 'bg-slate-800 text-slate-500 border-slate-700 hover:text-slate-300'}`}
                         >
@@ -524,10 +560,10 @@
                                     <div className="flex gap-1.5 justify-end">
                                         {over.balls.map((b, j) => (
                                             <span key={j} className={`w-6 h-6 flex items-center justify-center rounded text-[10px] font-bold font-mono shadow-sm
-                                                ${b === 'W' ? 'bg-rose-500 text-white' : 
-                                                  b === 6 ? 'bg-purple-500 text-white' : 
-                                                  b === 4 ? 'bg-emerald-500 text-slate-900' : 
-                                                  'bg-slate-700 text-slate-300'}`}>
+                                                ${b === 'W' ? 'bg-rose-500 text-white' :
+                                                    b === 6 ? 'bg-purple-500 text-white' :
+                                                        b === 4 ? 'bg-emerald-500 text-slate-900' :
+                                                            'bg-slate-700 text-slate-300'}`}>
                                                 {b}
                                             </span>
                                         ))}
@@ -556,7 +592,7 @@
                         </div>
                         <span className="font-mono font-bold text-2xl text-emerald-400">{data.score}</span>
                     </div>
-                    
+
                     <div className="bg-slate-900 border border-t-0 border-slate-800 rounded-b-xl overflow-hidden p-4">
                         {/* Batting Table */}
                         <div className="mb-8">
@@ -580,7 +616,7 @@
                                             const fours = b.fours ?? "-";
                                             const sixes = b.sixes ?? "-";
                                             const didBat = b.balls > 0 || b.out;
-                                            
+
                                             return (
                                                 <tr key={i} className={!b.out && b.balls > 0 ? "bg-emerald-900/10" : ""}>
                                                     <td className="text-l">
@@ -625,9 +661,9 @@
                                                 // Handle server data mapping: 'runs_given' is the key in server's bowler_stats
                                                 const runs = b.runs_given ?? b.runs ?? 0;
                                                 const wickets = b.wickets ?? 0;
-                                                const maidens = b.maidens ?? 0; 
+                                                const maidens = b.maidens ?? 0;
                                                 const balls = b.balls ?? 0;
-                                                
+
                                                 // Calculate Overs string (e.g. 3.2) from balls instead of using integer 'overs'
                                                 const oversDisplay = `${Math.floor(balls / 6)}.${balls % 6}`;
 
@@ -689,11 +725,11 @@
                     const [team1, score1] = entries[0];
                     const [team2, score2] = entries[1];
                     const tie = summaryObj['Tie'] || 0;
-                    
+
                     if (score1 > score2) summaryText = `${team1} Wins Series`;
                     else if (score2 > score1) summaryText = `${team2} Wins Series`;
                     else summaryText = "Series Drawn";
-                    
+
                     subText = `${team1} (${score1}) - ${team2} (${score2})` + (tie > 0 ? ` | Ties: ${tie}` : "");
                 } else {
                     summaryText = "Series Concluded";
@@ -724,13 +760,46 @@
             const [seriesComplete, setSeriesComplete] = useState(null);
 
             const fillDefaults = () => {
-                setTeam1({ name: "India", players: ["RG Sharma", "V Kohli", "RR Pant", "SA Yadav", "S Dube", "HH Pandya", "RA Jadeja", "AR Patel", "Kuldeep Yadav", "JJ Bumrah", "Arshdeep Singh"] });
-                setTeam2({ name: "Australia", players: ["DA Warner", "TM Head", "MR Marsh", "GJ Maxwell", "MP Stoinis", "TH David", "MS Wade", "PJ Cummins", "MA Starc", "A Zampa", "JR Hazlewood"] });
+                // Team 1: Attacking Bowling + Consistent Batsmen
+                setTeam1({
+                    name: "Precision XI",
+                    players: [
+                        "Babar Azam",      // consistent anchor
+                        "DA Warner",       // experienced top order
+                        "V Kohli",         // chase specialist
+                        "KS Williamson",   // stability
+                        "JC Buttler",      // controlled aggression
+                        "HH Pandya",       // seam all-rounder
+                        "RA Jadeja",       // balance
+                        "JJ Bumrah",       // strike bowler
+                        "MA Starc",        // attacking pace
+                        "K Rabada",        // wicket-taker
+                        "YS Chahal"      // attacking spin
+                    ]
+                });
+
+                // Team 2: Attacking Batsmen + Consistent Bowlers
+                setTeam2({
+                    name: "Power Surge XI",
+                    players: [
+                        "RG Sharma",       // explosive opener
+                        "TM Head",         // aggressive intent
+                        "SA Yadav",        // 360° strokeplay
+                        "GJ Maxwell",      // high impact
+                        "MP Stoinis",      // power hitter
+                        "TH David",        // finisher
+                        "MS Dhoni",        // control in death
+                        "PJ Cummins",      // reliable pace
+                        "JR Hazlewood",    // line-length master
+                        "A Zampa",         // consistent spinner
+                        "Mohammad Nabi"    // economical all-round option
+                    ]
+                });
             };
 
             const updatePlayer = (tId, idx, v) => {
-                if (tId === 1) { const n = [...team1.players]; n[idx] = v; setTeam1({...team1, players: n}); }
-                else { const n = [...team2.players]; n[idx] = v; setTeam2({...team2, players: n}); }
+                if (tId === 1) { const n = [...team1.players]; n[idx] = v; setTeam1({ ...team1, players: n }); }
+                else { const n = [...team2.players]; n[idx] = v; setTeam2({ ...team2, players: n }); }
             };
 
             const startSimulation = async () => {
@@ -739,9 +808,9 @@
                 setMatchDetail(null);
                 setHistory([]);
                 setSeriesComplete(null);
-                
+
                 try {
-                    const response = await fetch('http://127.0.0.1:8000/simulate_series_stream', {
+                    const response = await fetch('https://hewhocodes247-cricket-transformer-api.hf.space/simulate_series_stream', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -787,7 +856,7 @@
                         const chunk = decoder.decode(value, { stream: true });
                         buffer += chunk;
                         const lines = buffer.split('\n');
-                        buffer = lines.pop(); 
+                        buffer = lines.pop();
                         lines.forEach(processLine);
                     }
                     if (buffer.trim()) processLine(buffer);
@@ -801,7 +870,7 @@
             if (stage === 'predict') {
                 return <BallPredictor onBack={() => setStage('setup')} />;
             }
-            
+
             if (stage === 'setup') return (
                 <div className="min-h-screen p-8 max-w-6xl mx-auto">
                     <header className="mb-12 text-center">
@@ -809,12 +878,12 @@
                     </header>
                     <div className="grid md:grid-cols-2 gap-12">
                         <div className="space-y-4">
-                            <input value={team1.name} onChange={e => setTeam1({...team1, name: e.target.value})} className="w-full bg-transparent text-2xl font-bold border-b-2 border-slate-700 focus:border-emerald-500 outline-none pb-2 text-emerald-400" placeholder="Team 1" />
-                            {team1.players.map((p, i) => <PlayerInput key={i} value={p} onChange={v => updatePlayer(1, i, v)} placeholder={`Player ${i+1}`} />)}
+                            <input value={team1.name} onChange={e => setTeam1({ ...team1, name: e.target.value })} className="w-full bg-transparent text-2xl font-bold border-b-2 border-slate-700 focus:border-emerald-500 outline-none pb-2 text-emerald-400" placeholder="Team 1" />
+                            {team1.players.map((p, i) => <PlayerInput key={i} value={p} onChange={v => updatePlayer(1, i, v)} placeholder={`Player ${i + 1}`} />)}
                         </div>
                         <div className="space-y-4 text-right">
-                            <input value={team2.name} onChange={e => setTeam2({...team2, name: e.target.value})} className="w-full bg-transparent text-2xl font-bold border-b-2 border-slate-700 focus:border-rose-500 outline-none pb-2 text-rose-400 text-right" placeholder="Team 2" />
-                            {team2.players.map((p, i) => <PlayerInput key={i} value={p} onChange={v => updatePlayer(2, i, v)} placeholder={`Player ${i+1}`} />)}
+                            <input value={team2.name} onChange={e => setTeam2({ ...team2, name: e.target.value })} className="w-full bg-transparent text-2xl font-bold border-b-2 border-slate-700 focus:border-rose-500 outline-none pb-2 text-rose-400 text-right" placeholder="Team 2" />
+                            {team2.players.map((p, i) => <PlayerInput key={i} value={p} onChange={v => updatePlayer(2, i, v)} placeholder={`Player ${i + 1}`} />)}
                         </div>
                     </div>
                     <div className="mt-16 flex flex-col items-center gap-6">
@@ -826,8 +895,8 @@
                             <button onClick={fillDefaults} className="px-8 py-3 rounded-xl text-slate-400 border border-slate-700 font-bold hover:bg-slate-800 transition">Quick Fill</button>
                             <button onClick={startSimulation} className="px-12 py-3 rounded-xl bg-emerald-500 text-slate-900 font-black hover:scale-105 transition shadow-[0_0_20px_rgba(16,185,129,0.4)]">START SERIES</button>
                         </div>
-                         <button onClick={() => setStage('predict')} className="mt-4 px-6 py-2 rounded-lg bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-purple-300 font-bold border border-purple-500/30 hover:border-purple-500 hover:text-white transition flex items-center gap-2">
-                             <i data-lucide="brain-circuit" className="w-4 h-4"></i> AI PREDICTOR
+                        <button onClick={() => setStage('predict')} className="mt-4 px-6 py-2 rounded-lg bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-purple-300 font-bold border border-purple-500/30 hover:border-purple-500 hover:text-white transition flex items-center gap-2">
+                            <i data-lucide="brain-circuit" className="w-4 h-4"></i> AI PREDICTOR
                         </button>
                     </div>
                 </div>
@@ -844,7 +913,7 @@
                     </div>
 
                     <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-8">
-                        
+
                         {/* LEFT COLUMN: LIVE ACTION (1/2 width) */}
                         <div className="space-y-6">
                             {/* Loading State */}
@@ -861,7 +930,7 @@
 
                         {/* RIGHT COLUMN: COMMENTARY (1/2 width) */}
                         <div className="">
-                             <Commentary events={ballEvents} />
+                            <Commentary events={ballEvents} />
                         </div>
                     </div>
 
@@ -874,7 +943,7 @@
                                 <h2 className="text-xl font-black text-slate-300 uppercase tracking-wider mb-6 flex items-center gap-3">
                                     <i data-lucide="history" className="w-6 h-6 text-slate-500"></i> Match History
                                 </h2>
-                                
+
                                 <div className="grid gap-12">
                                     {history.map((m, idx) => (
                                         <div key={idx} className="bg-slate-950 rounded-2xl border border-slate-800 p-1 shadow-2xl">
@@ -886,7 +955,7 @@
                                                     <div className="text-xs text-slate-500">by {m.margin}</div>
                                                 </div>
                                             </div>
-                                            
+
                                             {/* Scorecards Container */}
                                             <div className="p-4 md:p-6 grid lg:grid-cols-2 gap-8">
                                                 {m.scorecard && Object.entries(m.scorecard).map(([name, data]) => (
@@ -909,4 +978,5 @@
         setTimeout(() => lucide.createIcons(), 100);
     </script>
 </body>
+
 </html>
