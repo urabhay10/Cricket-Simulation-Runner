@@ -53,6 +53,11 @@
 
         .score-table tr:last-child td { border-bottom: none; }
         .score-table tr:hover { background-color: rgba(30, 41, 59, 0.5); }
+        
+        /* Predictor Bar Animation */
+        .prob-bar {
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
     </style>
 </head>
 <body>
@@ -61,7 +66,7 @@
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
-        const PlayerInput = ({ value, onChange, placeholder }) => {
+        const PlayerInput = ({ value, onChange, placeholder, className }) => {
             const [suggestions, setSuggestions] = useState([]);
             const [show, setShow] = useState(false);
             const [selectedIndex, setSelectedIndex] = useState(-1);
@@ -71,7 +76,7 @@
                 const text = e.target.value;
                 onChange(text);
                 if (text.length >= 1) {
-                    fetch(`https://hewhocodes247-cricket-transformer-api.hf.space/players/search?q=${text}`)
+                    fetch(`http://127.0.0.1:8000/players/search?q=${text}`)
                         .then(res => res.json())
                         .then(data => {
                             setSuggestions(data);
@@ -112,10 +117,10 @@
             };
 
             return (
-                <div className="relative">
+                <div className="relative w-full">
                     <input
                         type="text"
-                        className="w-full bg-slate-800 border border-slate-700 rounded p-2 text-sm focus:border-emerald-500 focus:outline-none transition-colors text-white"
+                        className={className || "w-full bg-slate-800 border border-slate-700 rounded p-2 text-sm focus:border-emerald-500 focus:outline-none transition-colors text-white"}
                         placeholder={placeholder}
                         value={value}
                         onChange={handleInputChange}
@@ -123,7 +128,7 @@
                         onBlur={() => setTimeout(() => setShow(false), 200)}
                     />
                     {show && suggestions.length > 0 && (
-                        <ul ref={listRef} className="absolute z-10 w-full bg-slate-800 border border-slate-700 mt-1 rounded max-h-48 overflow-y-auto shadow-xl scrollbar-hide">
+                        <ul ref={listRef} className="absolute z-50 w-full bg-slate-800 border border-slate-700 mt-1 rounded max-h-48 overflow-y-auto shadow-xl scrollbar-hide">
                             {suggestions.map((s, i) => (
                                 <li key={i} 
                                     className={`p-2 hover:bg-slate-700 cursor-pointer text-sm border-b border-slate-700/50 flex justify-between transition-colors ${i === selectedIndex ? 'suggestion-active bg-slate-700' : ''}`}
@@ -137,6 +142,225 @@
                             ))}
                         </ul>
                     )}
+                </div>
+            );
+        };
+
+        const BallPredictor = ({ onBack }) => {
+            const [form, setForm] = useState({
+                innings: 1,
+                over: 19,
+                ball: 1,
+                total_runs: 150,
+                wickets: 4,
+                striker_name: "V Kohli",
+                bowler_name: "MA Starc",
+                target: ""
+            });
+            const [result, setResult] = useState(null);
+            const [loading, setLoading] = useState(false);
+
+            const handleChange = (field, val) => {
+                setForm(prev => ({ ...prev, [field]: val }));
+            };
+
+            // Keyboard shortcut for predict button (Ctrl+Enter or Cmd+Enter)
+            useEffect(() => {
+                const handleKeyPress = (e) => {
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && !loading) {
+                        e.preventDefault();
+                        handlePredict();
+                    }
+                };
+                window.addEventListener('keydown', handleKeyPress);
+                return () => window.removeEventListener('keydown', handleKeyPress);
+            }, [loading, form]);
+
+            const handlePredict = async () => {
+                setLoading(true);
+                setResult(null);
+                try {
+                    const payload = {
+                        ...form,
+                        target: form.innings === 2 && form.target ? parseInt(form.target) : null
+                    };
+
+                    const response = await fetch('http://127.0.0.1:8000/predict_ball', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const data = await response.json();
+                    setResult(data);
+                } catch (error) {
+                    console.error(error);
+                    alert("Prediction Failed: Check API connection");
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const outcomeColors = {
+                "0": "bg-slate-500",
+                "1": "bg-blue-500",
+                "2": "bg-cyan-500",
+                "3": "bg-teal-500",
+                "4": "bg-emerald-500",
+                "6": "bg-purple-500",
+                "Wicket": "bg-rose-500"
+            };
+
+            return (
+                <div className="min-h-screen p-6 flex flex-col items-center animate-fade-in max-w-4xl mx-auto w-full">
+                    {/* Header */}
+                    <div className="w-full flex justify-between items-center mb-8">
+                         <button onClick={onBack} className="text-xs font-bold text-slate-500 hover:text-white flex items-center gap-2 px-4 py-2 rounded-full bg-slate-900 border border-slate-800 transition hover:border-slate-600">
+                            <i data-lucide="arrow-left" className="w-4 h-4"></i> BACK TO SIMULATOR
+                        </button>
+                        <h1 className="text-2xl font-black bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent uppercase tracking-tight">AI Ball Predictor</h1>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-8 w-full">
+                        {/* Input Section */}
+                        <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-xl space-y-6">
+                            <div className="flex justify-between items-center border-b border-slate-800 pb-4">
+                                <h2 className="font-bold text-white flex items-center gap-2"><i data-lucide="sliders" className="w-4 h-4 text-purple-400"></i> Match State</h2>
+                            </div>
+                            
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="text-[10px] uppercase font-bold text-slate-500 mb-1 block">Innings</label>
+                                    <select 
+                                        value={form.innings} 
+                                        onChange={(e) => handleChange('innings', parseInt(e.target.value))}
+                                        className="w-full bg-slate-800 border border-slate-700 rounded p-2 text-sm text-white focus:border-purple-500 outline-none"
+                                    >
+                                        <option value={1}>1st Innings</option>
+                                        <option value={2}>2nd Innings</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="text-[10px] uppercase font-bold text-slate-500 mb-1 block">Target (Runs)</label>
+                                    <input 
+                                        type="number" 
+                                        disabled={form.innings === 1}
+                                        value={form.target} 
+                                        onChange={(e) => handleChange('target', e.target.value)}
+                                        className="w-full bg-slate-800 border border-slate-700 rounded p-2 text-sm text-white focus:border-purple-500 outline-none disabled:opacity-30"
+                                        placeholder={form.innings === 1 ? "-" : "e.g. 180"}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-3 gap-4">
+                                <div>
+                                    <label className="text-[10px] uppercase font-bold text-slate-500 mb-1 block">Over (0-19)</label>
+                                    <input type="number" value={form.over} onChange={(e) => handleChange('over', parseInt(e.target.value))} className="w-full bg-slate-800 border border-slate-700 rounded p-2 text-sm text-white focus:border-purple-500 outline-none" />
+                                </div>
+                                <div>
+                                    <label className="text-[10px] uppercase font-bold text-slate-500 mb-1 block">Ball (1-6)</label>
+                                    <input type="number" value={form.ball} onChange={(e) => handleChange('ball', parseInt(e.target.value))} className="w-full bg-slate-800 border border-slate-700 rounded p-2 text-sm text-white focus:border-purple-500 outline-none" />
+                                </div>
+                                <div>
+                                    <label className="text-[10px] uppercase font-bold text-slate-500 mb-1 block">Wickets</label>
+                                    <input type="number" value={form.wickets} onChange={(e) => handleChange('wickets', parseInt(e.target.value))} className="w-full bg-slate-800 border border-slate-700 rounded p-2 text-sm text-white focus:border-purple-500 outline-none" />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="text-[10px] uppercase font-bold text-slate-500 mb-1 block">Current Score</label>
+                                <input type="number" value={form.total_runs} onChange={(e) => handleChange('total_runs', parseInt(e.target.value))} className="w-full bg-slate-800 border border-slate-700 rounded p-2 text-sm text-white focus:border-purple-500 outline-none" />
+                            </div>
+
+                            <div className="space-y-4 pt-2 border-t border-slate-800">
+                                <div>
+                                    <label className="text-[10px] uppercase font-bold text-emerald-500 mb-1 block">Striker</label>
+                                    <PlayerInput 
+                                        value={form.striker_name} 
+                                        onChange={(v) => handleChange('striker_name', v)} 
+                                        placeholder="Enter Batter Name"
+                                        className="w-full bg-slate-800 border border-emerald-500/30 rounded p-2 text-sm text-white focus:border-emerald-500 outline-none"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-[10px] uppercase font-bold text-rose-500 mb-1 block">Bowler</label>
+                                    <PlayerInput 
+                                        value={form.bowler_name} 
+                                        onChange={(v) => handleChange('bowler_name', v)} 
+                                        placeholder="Enter Bowler Name"
+                                        className="w-full bg-slate-800 border border-rose-500/30 rounded p-2 text-sm text-white focus:border-rose-500 outline-none"
+                                    />
+                                </div>
+                            </div>
+
+                            <button 
+                                onClick={handlePredict} 
+                                disabled={loading}
+                                className="w-full py-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 font-bold text-white shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2"
+                            >
+                                {loading ? <i data-lucide="loader" className="w-5 h-5 animate-spin"></i> : <i data-lucide="zap" className="w-5 h-5"></i>}
+                                PREDICT OUTCOME
+                                <span className="text-xs opacity-70 ml-2">(Ctrl+Enter)</span>
+                            </button>
+                        </div>
+
+                        {/* Result Section */}
+                        <div className="flex flex-col gap-6">
+                            {result ? (
+                                <>
+                                    <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-xl relative overflow-hidden">
+                                        <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl -mr-10 -mt-10"></div>
+                                        <h3 className="text-slate-400 font-bold text-xs uppercase tracking-widest mb-6">Probability Distribution</h3>
+                                        
+                                        <div className="space-y-4">
+                                            {Object.entries(result.distribution).map(([outcome, prob]) => {
+                                                const percentage = (prob * 100).toFixed(1);
+                                                const isMax = Math.max(...Object.values(result.distribution)) === prob;
+                                                
+                                                return (
+                                                    <div key={outcome} className="group">
+                                                        <div className="flex justify-between text-sm mb-1">
+                                                            <span className={`font-bold ${outcome === 'Wicket' ? 'text-rose-400' : outcome === '6' || outcome === '4' ? 'text-emerald-400' : 'text-slate-300'}`}>
+                                                                {outcome === 'Wicket' ? 'WICKET' : outcome + (outcome === '1' ? ' Run' : ' Runs')}
+                                                            </span>
+                                                            <span className="font-mono text-slate-400">{percentage}%</span>
+                                                        </div>
+                                                        <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
+                                                            <div 
+                                                                className={`h-full rounded-full prob-bar ${outcomeColors[outcome] || 'bg-slate-500'} ${isMax ? 'shadow-[0_0_10px_currentColor]' : ''}`} 
+                                                                style={{ width: `${percentage}%`, opacity: isMax ? 1 : 0.7 }}
+                                                            ></div>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-800 flex justify-between items-center text-xs text-slate-500">
+                                        <div className="flex flex-col gap-1">
+                                            <span className="uppercase tracking-widest font-bold">Resolved As</span>
+                                        </div>
+                                        <div className="text-right flex gap-4">
+                                            <div>
+                                                <div className="text-emerald-400 font-bold">{result.striker_resolved}</div>
+                                                <div>Striker</div>
+                                            </div>
+                                            <div>
+                                                <div className="text-rose-400 font-bold">{result.bowler_resolved}</div>
+                                                <div>Bowler</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </>
+                            ) : (
+                                <div className="h-full flex flex-col items-center justify-center text-slate-600 bg-slate-900/30 rounded-2xl border border-slate-800/50 border-dashed">
+                                    <i data-lucide="bar-chart-2" className="w-12 h-12 mb-4 opacity-50"></i>
+                                    <p className="text-sm font-medium">Enter match details to predict</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 </div>
             );
         };
@@ -249,14 +473,24 @@
         };
 
         const Commentary = ({ events }) => {
-            const endRef = useRef(null);
-            useEffect(() => endRef.current?.scrollIntoView({ behavior: "smooth" }), [events]);
+            const scrollRef = useRef(null);
+            const [isAutoScroll, setIsAutoScroll] = useState(true);
+
+            useEffect(() => {
+                if (isAutoScroll && scrollRef.current) {
+                    const { scrollHeight, clientHeight } = scrollRef.current;
+                    scrollRef.current.scrollTo({ top: scrollHeight, behavior: 'smooth' });
+                }
+            }, [events, isAutoScroll]);
 
             const groupedOvers = [];
             events.forEach(e => {
                 if (!e || typeof e.over === 'undefined') return;
                 
-                const key = `${e.innings}-${e.over}`;
+                // CRITICAL FIX: Include match_no in the key to prevent overs from different matches merging
+                const matchPrefix = e.match_no ? `M${e.match_no}-` : '';
+                const key = `${matchPrefix}${e.innings}-${e.over}`;
+                
                 let over = groupedOvers.find(o => o.key === key);
                 if (!over) {
                     over = { key: key, team: e.bat_team, balls: [], runs: e.total_runs, wickets: e.wickets, overNum: e.over + 1 };
@@ -269,10 +503,16 @@
 
             return (
                 <div className="bg-slate-900 rounded-xl border border-slate-800 h-96 flex flex-col">
-                    <div className="p-3 border-b border-slate-800 bg-slate-900/50 backdrop-blur font-bold text-slate-400 text-xs uppercase tracking-widest sticky top-0">
-                        Live Commentary
+                    <div className="p-3 border-b border-slate-800 bg-slate-900/50 backdrop-blur font-bold text-slate-400 text-xs uppercase tracking-widest sticky top-0 flex justify-between items-center z-10">
+                        <span>Live Commentary</span>
+                        <button 
+                            onClick={() => setIsAutoScroll(!isAutoScroll)}
+                            className={`text-[10px] px-2 py-1 rounded border transition-colors ${isAutoScroll ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50' : 'bg-slate-800 text-slate-500 border-slate-700 hover:text-slate-300'}`}
+                        >
+                            {isAutoScroll ? 'Auto-Scroll: ON' : 'Auto-Scroll: OFF'}
+                        </button>
                     </div>
-                    <div className="flex-1 overflow-y-auto p-4 scrollbar-hide space-y-3">
+                    <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 scrollbar-hide space-y-3 relative">
                         {events.length === 0 && <div className="text-center text-slate-600 italic mt-32">Waiting for first ball...</div>}
                         {groupedOvers.map((over) => (
                             <div key={over.key} className="p-4 bg-slate-800 rounded-lg border border-slate-700/50 flex items-center justify-between ball-pop shadow-sm">
@@ -299,7 +539,6 @@
                                 </div>
                             </div>
                         ))}
-                        <div ref={endRef} />
                     </div>
                 </div>
             );
@@ -502,7 +741,7 @@
                 setSeriesComplete(null);
                 
                 try {
-                    const response = await fetch('https://hewhocodes247-cricket-transformer-api.hf.space/simulate_series_stream', {
+                    const response = await fetch('http://127.0.0.1:8000/simulate_series_stream', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -524,7 +763,14 @@
                             const data = JSON.parse(line);
                             if (data.type === 'ball') {
                                 setMatchDetail(data.detail);
-                                setBallEvents(prev => [...prev, { ...data.detail, innings: data.innings }]);
+                                setBallEvents(prev => {
+                                    const currentMatchNo = data.match_no;
+                                    const lastMatchNo = prev.length > 0 ? prev[prev.length - 1].match_no : currentMatchNo;
+                                    if (currentMatchNo !== lastMatchNo) {
+                                        return [{ ...data.detail, innings: data.innings, match_no: data.match_no }];
+                                    }
+                                    return [...prev, { ...data.detail, innings: data.innings, match_no: data.match_no }];
+                                });
                             } else if (data.type === 'match_update') {
                                 setHistory(prev => [data, ...prev]);
                             } else if (data.type === 'series_complete') {
@@ -551,6 +797,10 @@
                     setStage('setup');
                 }
             };
+
+            if (stage === 'predict') {
+                return <BallPredictor onBack={() => setStage('setup')} />;
+            }
             
             if (stage === 'setup') return (
                 <div className="min-h-screen p-8 max-w-6xl mx-auto">
@@ -576,6 +826,9 @@
                             <button onClick={fillDefaults} className="px-8 py-3 rounded-xl text-slate-400 border border-slate-700 font-bold hover:bg-slate-800 transition">Quick Fill</button>
                             <button onClick={startSimulation} className="px-12 py-3 rounded-xl bg-emerald-500 text-slate-900 font-black hover:scale-105 transition shadow-[0_0_20px_rgba(16,185,129,0.4)]">START SERIES</button>
                         </div>
+                         <button onClick={() => setStage('predict')} className="mt-4 px-6 py-2 rounded-lg bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-purple-300 font-bold border border-purple-500/30 hover:border-purple-500 hover:text-white transition flex items-center gap-2">
+                             <i data-lucide="brain-circuit" className="w-4 h-4"></i> AI PREDICTOR
+                        </button>
                     </div>
                 </div>
             );
